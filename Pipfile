@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 pydantic = "*"
 schedule = "*"
+fastapi = {extras = ["all"], version = "*"}
+sqlalchemy = "*"
 
 [dev-packages]
 

@@ -1,31 +1,65 @@
-# Paste your schema as a single string
-schema = """
-CREATE TABLE IF NOT EXISTS User (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(20) NOT NULL,
-    password VARCHAR(20) NOT NULL
-);
+from pydantic import BaseModel, Field
 
-CREATE TABLE IF NOT EXISTS LexicalEntry (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    lexeme VARCHAR(50) NOT NULL,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
-);
+from .vocap_db_types import TranslationCategory, Wordpack
 
-CREATE TABLE IF NOT EXISTS Translation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    lexeme VARCHAR(50) NOT NULL,
-    category VARCHAR(20),
-    wordpack VARCHAR(15)
-);
+# <--- User ---> #
 
-CREATE TABLE IF NOT EXISTS EntryTranslation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    entry_id INTEGER NOT NULL,
-    translation_id INTEGER NOT NULL,
-    FOREIGN KEY (entry_id) REFERENCES LexicalEntry(id) ON DELETE CASCADE,
-    FOREIGN KEY (translation_id) REFERENCES Translation(id) ON DELETE CASCADE,
-    UNIQUE(entry_id, translation_id)
-);
-"""
+class UserBase(BaseModel):
+    
+    username: str
+    password: str
+
+class UserCreate(UserBase):
+    pass
+
+class User(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# <--- LexicalEntry ---> #
+
+class LexicalEntryBase(BaseModel):
+    lexeme: str
+
+class LexicalEntryCreate(LexicalEntryBase):
+    user_id: int
+    pass
+
+class LexicalEntry(LexicalEntryBase):
+    
+    class Config:
+        orm_mode = True
+
+# <--- Translation ---> #
+
+class TranslationBase(BaseModel):
+    lexeme: str
+    category: TranslationCategory = Field(default=TranslationCategory.NEUTRAL)
+    wordpack: Wordpack = Field(default=Wordpack.BASIC)
+
+class TranslationCreate(TranslationBase):
+    # entry_id: int
+    pass
+
+class Translation(TranslationBase):
+
+    class Config:
+        orm_mode = True
+
+# <--- EntryTranslationMapping ---> #
+
+class EntryTranslationBase(BaseModel):
+    pass
+
+class EntryTranslationCreate(EntryTranslationBase):
+    entry_id: int
+    translation_id: int
+
+class EntryTranslation(EntryTranslationBase):
+    
+    class Config:
+        orm_mode = True
+

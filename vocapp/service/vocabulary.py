@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from vocapp.vocapptypes import LexicalEntry
+from shared.vocapptypes import LexicalEntry
 
 class PersonalVocabulary:
 
