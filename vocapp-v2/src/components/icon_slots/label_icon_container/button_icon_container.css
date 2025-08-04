@@ -1,0 +1,112 @@
+/* Base wrapper overrides (if needed) */
+.labeled-icon-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px; /* pill */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, box-shadow .2s, color .2s, transform .1s;
+  border: 1px solid transparent;
+  position: relative;
+  user-select: none;
+}
+.labeled-icon-container,
+.bic-label {
+  user-select: none; /* prevent text selection on click */
+}
+
+/* Label (the button inside) is unstyled so we style its container via class */
+.bic-label {
+  /* your existing styles */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: inherit;
+  color: inherit;
+  user-select: none;
+  /* optionally add this: */
+  outline: none; /* removes default outline */
+}
+
+.labeled-icon-container:focus {
+  outline: 2px solid #c7caff; /* custom focus outline */
+  outline-offset: 2px; /* space between button and outline */
+}
+
+.labeled-icon-container:focus-visible {
+    outline: 2px solid #c7caff; /* custom focus outline */
+    outline-offset: 2px; /* space between button and outline */
+}
+
+/* Icon slot tweaks if you want custom sizing */
+.bic-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* Primary variant */
+.labeled-icon-container.primary {
+  background: #6366f1;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+}
+
+.labeled-icon-container.primary:hover {
+  background: #5754e8;
+}
+
+.labeled-icon-container.primary:active {
+  background: #4f4fd0;
+  transform: translateY(1px);
+}
+
+.labeled-icon-container.primary:focus-visible {
+  outline: 2px solid #c7caff;
+  outline-offset: 2px;
+}
+
+/* Secondary variant */
+.labeled-icon-container.secondary {
+  background: #f0f4fa;
+  color: #1f2d45;
+  border: 1px solid #d9e2f0;
+}
+
+.labeled-icon-container.secondary:hover {
+  background: #e4ecf9;
+}
+
+.labeled-icon-container.secondary:active {
+  background: #d9e3f7;
+  transform: translateY(1px);
+}
+
+.labeled-icon-container.secondary:focus-visible {
+  outline: 2px solid #9bb8f6;
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.labeled-icon-container[aria-disabled="true"],
+.labeled-icon-container.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Optional small size modifier */
+.labeled-icon-container.small {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  gap: 4px;
+}

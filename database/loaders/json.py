@@ -90,7 +90,7 @@ class JSONLoader(SeederInterface):
                 entries=[]
             )
 
-            entry_trans: List[EntryTranslationMapper] = []
+            # entry_trans: List[EntryTranslationMapper] = []
 
             for entry in user.get('entries', []):
                 entry_trans_obj = EntryTranslationMapper(
@@ -109,31 +109,8 @@ class JSONLoader(SeederInterface):
                         )
                     )
                 
-                entry_trans.append(entry_trans_obj)
+                user_entries_obj.entries.append(entry_trans_obj)
             
             user_entries.append(user_entries_obj)
 
-            # users.append(user_obj)
-            
-    
-        # lexical_entries: List[LexicalEntry] = []
-
-        # for entry in users_data.get('entries', []):
-        # #     translations = entry.get('translations', [])
-        # #     translation_objects = [
-        # #         Translation(
-        # #             lexeme=translation['text'],
-        # #             category=translation.get('category', 'neutral'),
-        # #             wordpack=translation.get('wordpack', 'basic')
-        # #         ) for translation in translations
-        # #     ]
-
-        #     lexical_entry = vocap_schemas.LexicalEntryCreate(
-        #         lexeme=entry['lexeme'],
-        #         translations=translation_objects
-        #     )
-
-        #     lexical_entries.append(lexical_entry)
-        
-        # # return SeedData(users=users, lexical_entries=lexical_entries)
         return user_entries

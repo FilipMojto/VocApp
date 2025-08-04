@@ -1,0 +1,43 @@
+.text-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+  padding: 4px 0;
+  min-width: 0; /* for flex overflow handling */
+  color: #1f2937;
+    position: relative; /* already likely, required for absolute child */
+
+  /* min-width: 500px; */
+}
+
+.text-input::placeholder {
+  color: #9ca3af;
+}
+
+.clear-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  color: #9ca3af;
+  transition: background .2s, color .2s;
+    position: absolute;
+  right: 8px; /* spacing from the container edge */
+
+}
+
+.clear-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #374151;
+}
+
+.clear-button:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}

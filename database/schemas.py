@@ -2,63 +2,89 @@ from pydantic import BaseModel, Field
 
 from .vocap_db_types import TranslationCategory, Wordpack
 
-# <--- User ---> #
+# ─────────────────────────────────────────────
+# SECTION: Schemas 
+# ─────────────────────────────────────────────
+
+# === Generic Schemas ===
+
+class Identity(BaseModel):
+    id: int
+
+class VocapCreate(BaseModel):
+    pass
+
+class VocapUpdate(BaseModel):
+    pass
+
+class VocapReturn(BaseModel):
+    pass
+
+# === User ===
 
 class UserBase(BaseModel):
-    
     username: str
     password: str
 
-class UserCreate(UserBase):
+class UserCreate(VocapCreate, UserBase):
     pass
 
-class User(UserBase):
-    id: int
+class UserUpdate(VocapUpdate, UserBase, Identity):
+    # id: int
+    pass
+
+class User(VocapReturn, UserBase, Identity):
 
     class Config:
         orm_mode = True
 
-
-# <--- LexicalEntry ---> #
+# === Lexical Entry ===
 
 class LexicalEntryBase(BaseModel):
     lexeme: str
 
 class LexicalEntryCreate(LexicalEntryBase):
     user_id: int
-    pass
 
-class LexicalEntry(LexicalEntryBase):
+class LexicalEntry(LexicalEntryBase, Identity):
     
     class Config:
         orm_mode = True
 
-# <--- Translation ---> #
+class LexicalEntryUpdate(VocapUpdate, LexicalEntryBase, Identity):
+    pass
+
+# === Translation ===
 
 class TranslationBase(BaseModel):
     lexeme: str
     category: TranslationCategory = Field(default=TranslationCategory.NEUTRAL)
     wordpack: Wordpack = Field(default=Wordpack.BASIC)
 
-class TranslationCreate(TranslationBase):
-    # entry_id: int
+class TranslationCreate(VocapCreate, TranslationBase):
     pass
 
-class Translation(TranslationBase):
+class TranslationUpdate(VocapUpdate, TranslationBase, Identity):
+    pass
+
+class Translation(TranslationBase, Identity):
 
     class Config:
         orm_mode = True
 
-# <--- EntryTranslationMapping ---> #
+# === EntryTranslation ===
 
 class EntryTranslationBase(BaseModel):
     pass
 
-class EntryTranslationCreate(EntryTranslationBase):
+class EntryTranslationCreate(VocapCreate, EntryTranslationBase):
     entry_id: int
     translation_id: int
 
-class EntryTranslation(EntryTranslationBase):
+class EntryTranslationUpdate(VocapUpdate, EntryTranslationBase, Identity):
+    pass
+
+class EntryTranslation(EntryTranslationBase, Identity):
     
     class Config:
         orm_mode = True
