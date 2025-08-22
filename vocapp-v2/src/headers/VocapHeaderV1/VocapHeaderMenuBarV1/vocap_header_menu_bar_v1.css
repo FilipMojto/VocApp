@@ -1,0 +1,58 @@
+#vocap-header-menu-bar-v1 {
+  display: flex;
+  align-items: center;
+  gap: 0; /* no gap, separators will provide spacing */
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font-size: 0.95rem;
+}
+
+#vocap-header-menu-bar-v1 a {
+  padding: 0 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+#vocap-header-menu-bar-v1 a {
+  position: relative;
+  padding: 10px 20px;
+  color: white;
+  text-decoration: none;
+}
+
+#vocap-header-menu-bar-v1 a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+#vocap-header-menu-bar-v1 a:hover::after {
+  width: 100%;
+}
+
+#vocap-header-menu-bar-v1 a:hover {
+  color: rgba(255, 255, 255, 0.85); /* subtle hover fade */
+}
+
+/* Vertical line separator — applied only between items */
+#vocap-header-menu-bar-v1 a:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Small-screen tweak */
+@media (max-width: 600px) {
+  #vocap-header-menu-bar-v1 a {
+    padding: 0 10px;
+    font-size: 0.85rem;
+  }
+}

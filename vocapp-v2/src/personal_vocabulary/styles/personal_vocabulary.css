@@ -8,9 +8,10 @@
 }
 
 #personal-vocabulary-window{
-    position: fixed;
-    top: 0;
-    left: 0;
+    /* position: fixed; */
+    /* top: 0;
+    left: 0; */
+    flex-grow: 1;
     width: 100%;
     height: 100%;
     padding: 5px;
@@ -28,6 +29,15 @@
 
 #pvw-header{
     width: 100%;
+}
+
+#pvw-header > h1{
+
+    font-size: 1.5rem;       /* ~18px */
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    line-height: 1;
+    color: var(--section-text);
 }
 
 #pvw-header > hr{
@@ -54,20 +64,17 @@
 #pvw-content-container > .pvw-card{
   display: flex;
   flex-direction: column;
-  justify-content: space-between !important;
-  align-items: stretch !important;
+  justify-content: space-between;
+  align-items: stretch;
   gap: 10px;
   box-sizing: border-box;
 
-
-  /* background-color: var(--card-bg);    */
-  /* background-color: red !important; */
   margin-top: 1rem 0;
   padding: 1rem 1rem 1.5rem;
 
   width: 50%;
-  min-height: 38%;
-  height: 50%;
+  /* min-height: 38%; */
+  min-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }

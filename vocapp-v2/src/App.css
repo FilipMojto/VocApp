@@ -56,3 +56,9 @@ main {
 .read-the-docs {
   color: #888;
 } */
+
+#app-container {
+  
+  min-height: 100vh;
+  min-width: 100vw;
+}

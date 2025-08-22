@@ -1,0 +1,127 @@
+:root {
+  /* Header palette — change these if you want another color (see notes below) */
+  --header-bg-start: #0f766e; /* teal-700 */
+  --header-bg-end:   #0ea5a4; /* teal-500 (lighter) */
+  --header-text:     #ffffff;
+  --header-accent:   rgba(255,255,255,0.08);
+  --header-shadow:   0 6px 18px rgba(15,23,42,0.12);
+}
+
+/* Header container */
+#vocap-header-v1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 22px;
+  background: linear-gradient(90deg, var(--header-bg-start), var(--header-bg-end));
+  color: var(--header-text);
+  box-shadow: var(--header-shadow);
+  border-bottom: 1px solid var(--header-accent);
+  /* keep header visible while scrolling the PVW content */
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  gap: 12px;
+  /* keep size compact but flexible */
+  max-height: fit-content;
+  flex-grow: 0;
+}
+
+/* Title */
+#vocap-header-v1 h1 {
+  color: inherit;            /* uses --header-text */
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;       /* ~18px */
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* Container for action button(s) — safe generic selector so your ButtonIconContainer styles still apply */
+#vocap-header-v1 > *:not(h1) {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Generic button/icon styling — will let icons inherit color and be touch friendly */
+#vocap-header-v1 button,
+#vocap-header-v1 .button-icon-container,
+#vocap-header-v1 .icon-btn {
+  background: transparent;
+  color: inherit;            /* icon & label use header text color */
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 160ms ease, transform 90ms ease;
+}
+
+/* hover / active micro-interaction */
+#vocap-header-v1 button:hover,
+#vocap-header-v1 .button-icon-container:hover,
+#vocap-header-v1 .icon-btn:hover {
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-1px);
+}
+
+#vocap-header-v1 button:active,
+#vocap-header-v1 .button-icon-container:active,
+#vocap-header-v1 .icon-btn:active {
+  transform: translateY(0);
+}
+
+/* ensure svg icons size and they use currentColor */
+#vocap-header-v1 svg {
+  width: 100%;   /* ~22px */
+  height: 100%;
+  display: block;
+  color: inherit;   /*important for stroke="currentColor" */
+}
+
+/* small responsive tweak */
+@media (max-width: 600px) {
+  #vocap-header-v1 {
+    padding: 10px 14px;
+  }
+  #vocap-header-v1 h1 {
+    font-size: 1rem;
+  }
+}
+
+/* .vocap-header-button-container{
+  width: 59px;
+  height: 50px;
+}
+
+.vocap-header-icon-slot{
+  background-color: red;
+    width: 59px;
+  height: 50px;
+} */
+
+.vocap-header-icon-slot{
+    width: 40px;
+    height: auto;
+}
+
+.vocap-header-label{
+    font-size: 1rem;
+    color: var(--header-text);
+}
+
+.account-menu-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 50;
+}

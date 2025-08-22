@@ -24,7 +24,7 @@ function PersonalVocabulary() {
                 </header>
 
                 <main id='pvw-content-container'>
-                    <section id='pvw-lexical-entries-section' style={{backgroundColor: "red"}} className='pvw-card'>
+                    <section id='pvw-lexical-entries-section' className='pvw-card'>
                         <h2 className='section-title'>Entries</h2>
 
                         <div id="les-table" role="table" aria-label="Lexeme list">

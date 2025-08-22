@@ -1,0 +1,60 @@
+#account-menu-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  min-width: 180px;
+  font-family: system-ui, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#account-menu-bar .account-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#account-menu-bar hr {
+  border: none;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.08);
+  margin: 8px 0;
+}
+
+#account-menu-bar span {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+#account-menu-bar .username {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f766e; /* matches your header theme */
+}
+
+.account-menu-button-container {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 8px 10px;
+  transition: background 0.2s ease;
+}
+
+.account-menu-button-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.account-menu-icon-slot {
+  width: 20px;
+  height: 20px;
+}
+
+.account-menu-label {
+  font-size: 0.9rem;
+  color: #333;
+}

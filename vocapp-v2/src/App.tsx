@@ -3,45 +3,30 @@
 // import viteLogo from '/vite.svg'
 import './App.css'
 import PersonalVocabulary from './personal_vocabulary/PersonalVocabulary.tsx'
+import VocapHeaderV1 from './headers/VocapHeaderV1/VocappHeaderV1.tsx'
+import LoginPanel from './user_account/login_panel/LoginPanel.tsx'
+import RegisterPanel from './user_account/register_panel/RegisterPanel.tsx'
+import AuthPanelToggler from './user_account/panel_toggler/AuthPanelToggler.tsx'
 
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
+      <div id="app-container">
         <header>
-
+          <VocapHeaderV1 />
         </header>
         
         <main>
-          <PersonalVocabulary />
+          {/* <PersonalVocabulary /> */}
+          <AuthPanelToggler></AuthPanelToggler>
         </main>
 
         <footer>
 
         </footer>
       </div>
-      {/* <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
     </>
   )
 }
