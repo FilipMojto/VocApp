@@ -37,6 +37,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=vocap_schemas.VocapCreate)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=vocap_schemas.VocapUpdate)
 # DeleteSchemaType = TypeVar("DeleteSchemaType", bound=vocap_schemas.VocapDelete)
 
+
 class CRUDBase(Generic[ModelType, CreateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
@@ -59,30 +60,30 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
             db.rollback()
             raise e
 
-    
     def get_by_lexeme(self, lexeme: str, db: Session) -> Optional[ModelType]:
         """
-            Use only on tables LexicalEntries and Translations
+        Use only on tables LexicalEntries and Translations
         """
 
         return db.query(self.model).filter(self.model.lexeme == lexeme).first()
-    
+
     def get_by_col_value(self, col: str, value: Any, db: Session, many: bool = False):
         if not hasattr(self.model, col):
-            raise ValueError(f"Column '{col}' does not exist on model '{self.model.__name__}'")
+            raise ValueError(
+                f"Column '{col}' does not exist on model '{self.model.__name__}'"
+            )
 
         column_attr = getattr(self.model, col)
 
         print("col_attr", type(column_attr))
         print("val_attr", type(value))
-        
+
         # if type(column_attr) != type(value):
         #     raise TypeError("Specified column's type doesn't match the value's type.")
 
         query = db.query(self.model).filter(column_attr == value)
         return query.all() if many else query.first()
 
-    
     def update(self, obj_in: UpdateSchemaType, db: Session):
         """_summary_
 
@@ -93,7 +94,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         Returns:
             _type_: _description_
         """
-        
+
         # Get the existing object by its ID
         db_obj = db.query(self.model).get(obj_in.id)
         if not db_obj:

@@ -4,10 +4,12 @@ from abc import ABC, abstractmethod
 
 from ..schemas import UserBase, LexicalEntryBase, LexicalEntryBase
 
+
 @dataclass
 class EntryTranslationMapper:
     entry: LexicalEntryBase
     translations: List[LexicalEntryBase] = dc_field(default_factory=[])
+
 
 @dataclass
 class UserEntryMapper:
@@ -19,7 +21,7 @@ class UserEntryMapper:
 # class SeedData:
 #     users: List[UserCreate]
 #     lexical_entries: List[LexicalEntryCreate]
-    # extend as needed
+# extend as needed
 
 
 class SeederInterface(ABC):

@@ -24,7 +24,7 @@
 
 #les-table {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   gap: 0px;
   background: var(--les-table-bg);
   border: 1px solid var(--les-border);

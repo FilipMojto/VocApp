@@ -1,11 +1,14 @@
 import ButtonIconContainer from "../../../components/icon_slots/label_icon_container/ButtonIconContainer";
+import { useAuth } from "../../../user_account/auth_context/AuthContext";
 import './AccountMenuBar.css'
 
 function AccountMenuBar() {
+    const {user, setUser} = useAuth();
+
     return (
         <div id="account-menu-bar">
             <span>Logged As</span>
-            <span className="username">User123</span>
+            <span className="username">{user?.username}</span>
             <hr></hr>
             <nav className="account-menu">
                 <ButtonIconContainer
@@ -31,6 +34,10 @@ function AccountMenuBar() {
                     containerClassName="account-menu-button-container"
                     iconSlotClassName="account-menu-icon-slot"
                     labelClassName="account-menu-label"
+                    onClick={() => {
+                        localStorage.removeItem("token");
+                        setUser(null);
+                    }}
                 ></ButtonIconContainer>
             </nav>
         </div>

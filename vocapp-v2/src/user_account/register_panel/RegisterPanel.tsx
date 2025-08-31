@@ -1,20 +1,60 @@
-import './RegisterPanel.css';
-import LoginPanel from '../login_panel/LoginPanel';
+import '../login_panel/LoginPanel.css';
 import InputIconContainer from '../../components/icon_slots/input_icon_container/InputIconContainer';
 import type { AuthPanelProps } from '../auth_panel/AuthPanel';
+import AuthPanel from '../auth_panel/AuthPanel';
+import { useState } from 'react';
+import api, { loginUser, registerUser } from '../../api';
 
 interface RegisterPanelProps extends AuthPanelProps {
-  
+  onRegisterSuccess: (user: any) => void;
 }
 
-function RegisterPanel({ onToggle }: RegisterPanelProps) {
+function RegisterPanel({onRegisterSuccess, onToggle}: RegisterPanelProps) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      // 1. Register
+      // await api.post("/users/", { username, password });
+      await registerUser(username, password);
+
+      // 2. Auto-login after registration
+      // const loginRes = await api.post(
+      //   "/auth/login",
+      //   new URLSearchParams({ username, password }),
+      //   { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      // );
+      // localStorage.setItem("token", (loginRes.data as { access_token: string }).access_token);
+      const { access_token} = await loginUser(username, password);
+      localStorage.setItem("token", access_token);
+
+
+      // 3. Fetch profile
+      const profile = await api.get("/users/me");
+      onRegisterSuccess(profile.data);
+    } catch (err: any) {
+      setError("Registration failed. Try different username.");
+    }
+  }
+  
   return (
-    <LoginPanel
+    <AuthPanel
       authTitle="Create Account"
       authSubtitle="Please register to continue"
       submitButtonText="Register"
       secondaryButtonText="Back to Login"
       onToggle={onToggle}   // 👈 pass toggle handler down
+      // mode='register'
+      onSubmit={handleRegister}
+      onUsernameChange={setUsername}
+      onPasswordChange={setPassword}
+      error={error}
+
       extraInputs={
         <>
           <InputIconContainer
@@ -29,6 +69,12 @@ function RegisterPanel({ onToggle }: RegisterPanelProps) {
           />
         </>
       }
+                  authPanelClassName="login-panel"
+            authTitleClassName="login-title"
+            authSubtitleClassName="login-subtitle"
+            authFormClassName="login-form"
+            submitButtonClassName="login-button"
+            secondaryButtonClassName="secondary-button"
     />
   );
 }

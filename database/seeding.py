@@ -15,48 +15,67 @@ from .crud import crud as vocap_crud
 from . import schemas as vocap_schemas
 from .crud.models import *
 
-DB_PATH = './vocapp.db'
-SUPPORTED_SEEDERS = ['json']    
+DB_PATH = "./vocapp.db"
+SUPPORTED_SEEDERS = ["json"]
 
 
 def seed_data(seeder: str, db: Session):
     print("Seeding data...")
     """Seed the database with initial data."""
     if seeder not in SUPPORTED_SEEDERS:
-        raise ValueError(f"Unsupported seeder format: {seeder}. Supported formats: {SUPPORTED_SEEDERS}")
+        raise ValueError(
+            f"Unsupported seeder format: {seeder}. Supported formats: {SUPPORTED_SEEDERS}"
+        )
 
     module_instance: SeederInterface = None
-    
+
     match seeder:
-        case 'json':
+        case "json":
             module_instance = JSONLoader()
         case _:
-            raise ValueError(f"Unsupported seeder format: {seeder}. Supported formats: {SUPPORTED_SEEDERS}")
-        
+            raise ValueError(
+                f"Unsupported seeder format: {seeder}. Supported formats: {SUPPORTED_SEEDERS}"
+            )
+
     seed_data = module_instance.load_data()
     print("seed:\n", seed_data)
 
     # Insert users into the database
     for user_entry_obj in seed_data:
-        user = user_crud.create(db=db, obj_in=vocap_schemas.UserCreate(**user_entry_obj.user.model_dump()))
-
+        user = user_crud.create(
+            db=db, obj_in=vocap_schemas.UserCreate(**user_entry_obj.user.model_dump())
+        )
 
         for entry_trans_obj in user_entry_obj.entries:
-            entry = entry_crud.create(db=db, obj_in=vocap_schemas.LexicalEntryCreate(user_id=user.id, **entry_trans_obj.entry.model_dump()))
+            entry = entry_crud.create(
+                db=db,
+                obj_in=vocap_schemas.LexicalEntryCreate(
+                    user_id=user.id, **entry_trans_obj.entry.model_dump()
+                ),
+            )
 
             for translation_obj in entry_trans_obj.translations:
                 # Check if translation already exists
-                existing = translation_crud.get_by_lexeme(db=db, lexeme=translation_obj.lexeme)
-                
+                existing = translation_crud.get_by_lexeme(
+                    db=db, lexeme=translation_obj.lexeme
+                )
+
                 if existing:
                     translation = existing
                 else:
                     translation = translation_crud.create(
                         db=db,
-                        obj_in=vocap_schemas.TranslationCreate(**translation_obj.model_dump())
+                        obj_in=vocap_schemas.TranslationCreate(
+                            **translation_obj.model_dump()
+                        ),
                     )
 
                 # translation = translation_crud.create(db=db, obj_in=vocap_schemas.TranslationCreate(**translation_obj.model_dump()))
-                entry_translation_crud.create(db=db, obj_in=vocap_schemas.EntryTranslationCreate(entry_id=entry.id, translation_id=translation.id))
+                entry_translation_crud.create(
+                    db=db,
+                    obj_in=vocap_schemas.EntryTranslationCreate(
+                        entry_id=entry.id, translation_id=translation.id
+                    ),
+                )
 
-    db.commit()     
+    db.commit()

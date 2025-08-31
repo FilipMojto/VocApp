@@ -4,7 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-bcrypt = "*"
+pydantic = "*"
+schedule = "*"
+fastapi = {extras = ["all"], version = "*"}
+sqlalchemy = "*"
+python-jose = "*"
+passlib = "*"
 
 [dev-packages]
 

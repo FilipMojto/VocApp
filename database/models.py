@@ -1,4 +1,4 @@
-__ALL__ = ['User', 'LexicalEntry', 'Translation', 'EntryTranslation']
+__ALL__ = ["User", "LexicalEntry", "Translation", "EntryTranslation"]
 
 from sqlalchemy import Integer, Column, String, ForeignKey, Table, Enum
 from sqlalchemy.orm import relationship
@@ -7,14 +7,21 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from .dbconfig import Base
 from .vocap_db_types import TranslationCategory, Wordpack
 
+
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     username = Column(String, index=True, nullable=False, unique=True)
     password = Column(String, index=True, nullable=False)
+    hashed_password = Column(String, index=True, nullable=False)
 
-    lexical_entries = relationship("LexicalEntry", back_populates="owner", cascade="all, delete")
+    lexical_entries = relationship(
+        "LexicalEntry", back_populates="owner", cascade="all, delete"
+    )
+    translations = relationship(
+        "Translation", back_populates="owner", cascade="all, delete"
+    )
 
 
 # entries_translations = Table(
@@ -44,16 +51,20 @@ class Translation(Base):
 
     id = Column(Integer, primary_key=True, index=False)
     lexeme = Column(String, index=True, nullable=False, unique=True)
-    category = Column(Enum(TranslationCategory), nullable=False, default=TranslationCategory.NEUTRAL)
+    category = Column(
+        Enum(TranslationCategory), nullable=False, default=TranslationCategory.NEUTRAL
+    )
     wordpack = Column(Enum(Wordpack), nullable=False, default=Wordpack.BASIC)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    owner = relationship("User", back_populates="translations")
     # entries = relationship("LexicalEntry", secondary=entries_translations, back_populates="translations")
     entries = association_proxy("translation_links", "entry")
-
 
 
 class EntryTranslation(Base):
     __tablename__ = "entries_translations"
 
+    # id = Column(Integer, primary_key=True, index=False, autoincrement=True)
     entry_id = Column(Integer, ForeignKey("lexical_entries.id"), primary_key=True)
     translation_id = Column(Integer, ForeignKey("translations.id"), primary_key=True)
 

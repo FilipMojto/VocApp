@@ -7,6 +7,7 @@ from .seeding import seed_data
 from .crud.models import *
 from .models import *
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Launch FastAPI with custom DB config")
     parser.add_argument("--db_type", choices=["sqlite", "postgresql"], default="sqlite")
@@ -21,6 +22,7 @@ def parse_args():
     parser.add_argument("--seed", default=None, type=str, required=False)
     return parser.parse_args()
 
+
 args = parse_args()
 
 db_url = get_database_url(
@@ -29,7 +31,7 @@ db_url = get_database_url(
     password=args.password,
     host=args.host,
     port=args.port,
-    dbname=args.dbname
+    dbname=args.dbname,
 )
 
 engine = get_engine(db_url)
