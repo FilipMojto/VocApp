@@ -40,3 +40,11 @@ def get_engine(db_url: str):
 
 def get_session_local(engine):
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Dependencys
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

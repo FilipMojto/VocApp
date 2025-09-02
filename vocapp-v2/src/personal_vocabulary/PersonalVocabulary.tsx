@@ -13,6 +13,7 @@ import ButtonIconContainer from "../components/icon_slots/label_icon_container/B
 import { useAuth } from "../user_account/auth_context/AuthContext";
 import api from "../api";
 import NewTranslationModalWindow from "./new_translation_modal_window/NewTranslationModalWindow";
+import { NewEntryModalWindow } from "./new_entry_modal_window/NewEntryModalWindow";
 interface LexicalEntry {
   id: number;
   lexeme: string;
@@ -32,7 +33,9 @@ function PersonalVocabulary() {
   const { user, setUser } = useAuth();
   const [entries, setEntries] = useState<LexicalEntry[]>([]);
   const [entries_loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedEntryId, setSelectedEntryId] = useState<number | null>(null);
+  const [newEntryModalWindowMode, setNewEntryModalWindowMode] = useState<NewTranslationModalWindowMode>("hidden");
+
 
 
   // add these states near your other states
@@ -47,9 +50,11 @@ type NewTranslationModalWindowMode = "hidden" | "adding" | "editing";
 const [newTranslationModalWindowMode, setNewTranslationModalWindowMode] = useState<NewTranslationModalWindowMode>("hidden");
 const [translation, setTranslation] = useState<Translation | null>(null); // for editing existing translation
 
+// lexical entries
+
 // updated handleRowClick with 404 handling
-const handleRowClick = useCallback((entry: LexicalEntry) => {
-  setSelectedId(entry.id);
+const handleEntryRowClick = useCallback((entry: LexicalEntry) => {
+  setSelectedEntryId(entry.id);
 
   const reqId = ++latestTranslationsReqId.current;
   setTranslationsStatus("loading");
@@ -98,6 +103,12 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
     }
   }, [user]);
 
+  const handleAddEntry = () => {
+    // logic to add a new lexical entry
+    setNewEntryModalWindowMode("adding");
+    console.log("Add Entry clicked");
+  }
+
   const handleAddTranslation = () => {
     // logic to add a new lexical entry
     if (entries.length === 0) {
@@ -105,12 +116,17 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
       return;
     }
 
+    if (selectedEntryId === null) {
+      alert("Please select a lexical entry first.");
+      return;
+    }
+
     setTranslation(null); // ensure no pre-filled data
     setNewTranslationModalWindowMode("adding");
     console.log("Add Translation clicked");
-
-    
   }
+
+  
 
   if (!user) {
     return <label>Please log in to access your personal vocabulary.</label>;
@@ -144,7 +160,7 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
                   </div>
 
                   {entries.map((entry, index) => (
-                    <div key={entry.id} className="les-table-row" role="row" onClick={() => handleRowClick(entry)}>
+                    <div key={entry.id} className="les-table-row" role="row" onClick={() => handleEntryRowClick(entry)}>
                       <div className="les-table-cell" role="cell">
                         {index + 1}
                       </div>
@@ -204,6 +220,7 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
                     </svg>
                   }
                   label="Add Entry"
+                  onClick={() => handleAddEntry()}
                 />
               </div>
             </section>
@@ -302,6 +319,7 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
               </div>
             </section>
             {newTranslationModalWindowMode !== "hidden" && (
+           
               <NewTranslationModalWindow
                 onCancel={
                   () => {
@@ -315,7 +333,7 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
                   api.post<Translation>("/translations/", newTranslation)
                     .then((res) => {
                       api.post("/entry_translations/", {
-                        entry_id: selectedId!,
+                        entry_id: selectedEntryId!,
                         translation_id: res.data.id
                       }).then(() => {
 
@@ -323,11 +341,34 @@ const handleRowClick = useCallback((entry: LexicalEntry) => {
                           setNewTranslationModalWindowMode("hidden");
                           setTranslation(null);
                           // Optionally refresh translations list if an entry is selected
-                          if (selectedId) { handleRowClick(entries.find(e => e.id === selectedId)!);  // non-null assertion since selectedId is from entries
+                          if (selectedEntryId) { handleEntryRowClick(entries.find(e => e.id === selectedEntryId)!);  // non-null assertion since selectedId is from entries
                         }});
                     })
                   
                 }}></NewTranslationModalWindow>
+            )}
+
+            {newEntryModalWindowMode !== "hidden" && (
+              <NewEntryModalWindow
+                onCancel={
+                  () => {
+                    setNewEntryModalWindowMode("hidden");
+                  }
+
+                }
+                onAdd={(newEntry) => {
+                  console.log("New entry to add:", newEntry);
+                  api.post<LexicalEntry>("/entries", newEntry)
+                    .then((res) => {
+                      console.log("Entry added:", res.data);
+                      setEntries((prev) => [...prev, res.data]);
+                      setNewEntryModalWindowMode("hidden");
+                    })
+                    .catch((err) => {
+                      console.error("Error adding entry:", err);
+                      alert("Failed to add entry. Please try again.");
+                    });
+                }}></NewEntryModalWindow>
             )}
           </main>
         </div>

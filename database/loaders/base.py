@@ -2,19 +2,19 @@ from dataclasses import dataclass, field as dc_field
 from typing import List
 from abc import ABC, abstractmethod
 
-from ..schemas import UserBase, LexicalEntryBase, LexicalEntryBase
+from ..schemas import UserBase, WordCreate
 
 
 @dataclass
-class EntryTranslationMapper:
-    entry: LexicalEntryBase
-    translations: List[LexicalEntryBase] = dc_field(default_factory=[])
+class WordMapper:
+    entry: WordCreate
+    translations: List[WordCreate] = dc_field(default_factory=[])
 
 
 @dataclass
 class UserEntryMapper:
     user: UserBase
-    entries: List[EntryTranslationMapper] = dc_field(default_factory=[])
+    entries: List[WordMapper] = dc_field(default_factory=[])
 
 
 # @dataclass

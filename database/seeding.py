@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
-from .models import User, LexicalEntry, Translation, EntryTranslation
+# from .models import User, LexicalEntry, Translation, EntryTranslation
 from .loaders.base import SeederInterface
 from .loaders.json import JSONLoader
 from .crud import crud as vocap_crud
@@ -47,7 +47,7 @@ def seed_data(seeder: str, db: Session):
         )
 
         for entry_trans_obj in user_entry_obj.entries:
-            entry = entry_crud.create(
+            entry = word_crud.create(
                 db=db,
                 obj_in=vocap_schemas.LexicalEntryCreate(
                     user_id=user.id, **entry_trans_obj.entry.model_dump()
@@ -71,9 +71,9 @@ def seed_data(seeder: str, db: Session):
                     )
 
                 # translation = translation_crud.create(db=db, obj_in=vocap_schemas.TranslationCreate(**translation_obj.model_dump()))
-                entry_translation_crud.create(
+                word_relation_crud.create(
                     db=db,
-                    obj_in=vocap_schemas.EntryTranslationCreate(
+                    obj_in=vocap_schemas.WordRelationCreate(
                         entry_id=entry.id, translation_id=translation.id
                     ),
                 )

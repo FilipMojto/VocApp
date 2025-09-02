@@ -1,49 +1,55 @@
 {
   "users": [
       {
-        "id": 1,
         "name": "Test User",
         "password": "password123",
-        "entries": [
+        "words": [
           {
-            "id": "1",
             "lexeme": "organizovať udalosť/akciu",
-            "translations": [
+            "language_code": "sk",
+            "category": "neutral",
+            "wordpack": "basic",
+            "mapped_words": [
               {
-                "id": "1",
                 "lexeme": "to hold an event",
+                "language_code": "en",
                 "category": "formal",
                 "wordpack": "basic"
               },
               {
-                "id": "2",
                 "lexeme": "to organize an event",
+                "language_code": "en",
                 "category": "neutral",
                 "wordpack": "basic"
               },
               {
-                "id": "3",
                 "lexeme": "to throw a party",
+                "language_code": "en",
                 "category": "informal",
                 "wordpack": "basic"
               }
             ]
           },
           {
-            "id": "2",
             "lexeme": "zvýšiť povedomie",
-            "translations": [
+            "language_code": "sk",
+            "category": "neutral",
+            "wordpack": "basic",
+            "mapped_words": [
               {
                 "lexeme": "to raise awareness",
+                "language_code": "en",
                 "category": "neutral",
                 "wordpack": "basic"
               },
               {
+                "language_code": "en",
                 "lexeme": "to bring attention to something",
                 "category": "neutral",
                 "wordpack": "basic"
               },
               {
+                "language_code": "en",
                 "lexeme": "to shine a light on something",
                 "category": "idiomatic",
                 "wordpack": "basic"

@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument("--port", default="5432")
     parser.add_argument("--user", default="postgres")
     parser.add_argument("--password", default="postgres")
-    parser.add_argument("--dbname", default="testdb")
+    parser.add_argument("--dbname", default="./database/data/vocapp.db")
     parser.add_argument("--api_host", default="127.0.0.1")
     parser.add_argument("--api_port", default=8000, type=int)
 

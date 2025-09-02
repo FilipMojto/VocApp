@@ -7,10 +7,10 @@ import os, sys
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../..')
 
-from .base import SeederInterface, UserEntryMapper, EntryTranslationMapper
+from .base import SeederInterface, UserEntryMapper, WordMapper
 
 # from shared.vocapptypes import LexicalEntry, Translation, User, Category, Wordpack
-from ..vocap_db_types import TranslationCategory, Wordpack
+from ..vocap_db_types import WordCategory, Wordpack
 from .. import schemas as vocap_schemas
 
 # VOCAB_FILE_PATH = '../seeds/words.json'
@@ -92,7 +92,7 @@ class JSONLoader(SeederInterface):
             # entry_trans: List[EntryTranslationMapper] = []
 
             for entry in user.get("entries", []):
-                entry_trans_obj = EntryTranslationMapper(
+                entry_trans_obj = WordMapper(
                     vocap_schemas.LexicalEntryBase(lexeme=entry["lexeme"]),
                     translations=[],
                 )
@@ -101,7 +101,7 @@ class JSONLoader(SeederInterface):
                     entry_trans_obj.translations.append(
                         vocap_schemas.TranslationBase(
                             lexeme=translation["lexeme"],
-                            category=TranslationCategory[
+                            category=WordCategory[
                                 translation["category"].upper()
                             ],
                             wordpack=Wordpack[translation["wordpack"].upper()],

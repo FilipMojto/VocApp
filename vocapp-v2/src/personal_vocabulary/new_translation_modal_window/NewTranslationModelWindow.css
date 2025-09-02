@@ -69,6 +69,7 @@
 
 .ntmw-input,
 .ntmw-select {
+    box-sizing: border-box;
   width: 100%;
   padding: 0.6rem 0.75rem;
   border-radius: 10px;
