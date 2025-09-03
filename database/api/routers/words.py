@@ -1,14 +1,12 @@
-
-import logging
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.orm import Session
-from .. import models, schemas
-from ..crud.models import word_crud
-from .. import auth
-from ..dbconfig import get_db
+from ... import models, schemas
+from ...crud.models import word_crud
+from ... import auth
+from ...dbconfig import get_db
+from ..utils import handle_integrity_error
 
 word_router = APIRouter(prefix="/words", tags=["words"])
 
@@ -25,16 +23,9 @@ async def create_word(
             db=db,
         )
         
-
         return word
-
-        # return schemas.WordReturn(**entry_create.model_dump(), id=entry_create.id)
     except IntegrityError as e:
-        logging.error(e.orig)
-        raise HTTPException(
-            status_code=400,
-            detail="Constraint violation: e.g. duplicate key or null field",
-        )
+        handle_integrity_error(e)
 
 
 @word_router.get("/{word_id}", response_model=schemas.WordReturn)
@@ -56,14 +47,8 @@ async def read_words(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
 async def update_word(
     word_id: int, word: schemas.WordUpdate, db: Session = Depends(get_db)
 ):
-    # db_entry = word_crud.update(obj_in=entry, obj_id=word_id, db=db)
-
-    # if db_entry is None:
-    #     raise HTTPException(status_code=404, detail="Entry not found")
-
-    # return db_entry
-
     db_word = word_crud.get(id=word_id, db=db)
+    
     if db_word is None:
         raise HTTPException(status_code=404, detail="Word not found")
     

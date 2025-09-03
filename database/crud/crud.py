@@ -1,46 +1,65 @@
 from sqlalchemy.orm import Session
-from .. import models, schemas
 from ..models import *
 from .. import schemas as vocap_schemas
 
-# <--- Users ---> #
-
-# def get_user(db: Session, user_id: int):
-#     return db.query(models.User).filter(models.User.id == user_id).first()
-
-# def get_users(db: Session, skip: int = 0, limit: int = 10):
-#     return db.query(models.User).offset(skip).limit(limit).all()
-
-# def create_user(db: Session, user: schemas.UserCreate):
-#     db_user = models.User(**user.model_dump())
-#     db.add(db_user)
-#     db.commit()
-#     db.refresh(db_user)
-#     return db_user
-
-# # <--- Lexical Entries ---> #
-
-# def create_lexical_entry(db: Session, entry: schemas.LexicalEntryCreate):
-#     db_entry = models.LexicalEntry(**entry.model_dump())
-#     db.add(db_entry)
-#     db.commit()
-#     db.refresh(db_entry)
-#     return db_entry
-
-from typing import Generic, TypeVar, Type, List, Optional, Any
+from typing import Callable, Dict, Generic, TypeVar, Type, List, Optional, Any
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from pydantic import BaseModel
 
 ModelType = TypeVar("ModelType")
 CreateSchemaType = TypeVar("CreateSchemaType", bound=vocap_schemas.VocapCreate)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=vocap_schemas.VocapUpdate)
-# DeleteSchemaType = TypeVar("DeleteSchemaType", bound=vocap_schemas.VocapDelete)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType]):
-    def __init__(self, model: Type[ModelType]):
+    def __init__(
+        self,
+        model: Type[ModelType],
+        field_transformers: Optional[Dict[str, Callable[[Any], Any]]] = None,
+    ):
         self.model = model
+        self.field_transformers = field_transformers
+
+    def __apply_field_transformers(self, obj_data: Dict[str, Any]):
+        """
+        Field transformers may be provided in three forms:
+          1) {"password": some_callable} -> replaces obj_data["password"] with callable(value)
+          2) {"password": ("hashed_password", some_callable)} -> sets obj_data["hashed_password"] = callable(value) and removes obj_data["password"]
+          3) {"password": some_callable_returning_dict} -> merges the returned dict into obj_data and removes original "password"
+        """
+        if not self.field_transformers:
+            return
+
+        for field, transformer in self.field_transformers.items():
+            if field not in obj_data:
+                continue
+
+            # form (2): tuple (target_name, fn)
+            if isinstance(transformer, (tuple, list)) and len(transformer) == 2 and callable(transformer[1]):
+                target_name, fn = transformer[0], transformer[1]
+                new_val = fn(obj_data[field])
+                obj_data[target_name] = new_val
+                # remove original if different
+                if target_name != field:
+                    obj_data.pop(field, None)
+                continue
+
+            # form (1) or (3): callable
+            if callable(transformer):
+                res = transformer(obj_data[field])
+                # if callable returned a dict, merge it
+                if isinstance(res, dict):
+                    obj_data.update(res)
+                    # remove original field (we assume transformer provided replacements)
+                    obj_data.pop(field, None)
+                else:
+                    # simple replace in-place
+                    obj_data[field] = res
+                continue
+
+            # unexpected transformer type
+            raise TypeError(f"Unsupported transformer for field '{field}': {transformer!r}")
+        
 
     def get(self, id: int, db: Session) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.id == id).first()
@@ -50,7 +69,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
 
     def create(self, obj_in: CreateSchemaType, db: Session) -> ModelType:
         obj_data = obj_in.model_dump()
+        self.__apply_field_transformers(obj_data=obj_data)
         db_obj = self.model(**obj_data)
+
         try:
             db.add(db_obj)
             db.commit()
@@ -74,45 +95,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
             )
 
         column_attr = getattr(self.model, col)
-
-        print("col_attr", type(column_attr))
-        print("val_attr", type(value))
-
-        # if type(column_attr) != type(value):
-        #     raise TypeError("Specified column's type doesn't match the value's type.")
-
         query = db.query(self.model).filter(column_attr == value)
         return query.all() if many else query.first()
 
-    # def update(self, obj_id: int, obj_in: UpdateSchemaType, db: Session):
-    #     """_summary_
-
-    #     Args:
-    #         obj_in (UpdateSchemaType): _description_
-    #         db (Session, optional): _description_. Defaults to None.
-
-    #     Returns:
-    #         _type_: _description_
-    #     """
-
-    #     # Get the existing object by its ID
-    #     db_obj = db.query(self.model).get(obj_id)
-    #     if not db_obj:
-    #         return None
-
-    #     # Update the fields
-    #     update_data = obj_in.model_dump(exclude_unset=True)
-    #     for field, value in update_data.items():
-    #         setattr(db_obj, field, value)
-
-    #     db.commit()
-    #     db.refresh(db_obj)
-    #     return db_obj
-    
     def update(self, db: Session, db_obj: ModelType, obj_in: UpdateSchemaType):
         update_data = obj_in.model_dump(exclude_unset=True)
+        self.__apply_field_transformers(obj_data=update_data)
+
         for field, value in update_data.items():
             setattr(db_obj, field, value)
+        
         db.commit()
         db.refresh(db_obj)
         return db_obj

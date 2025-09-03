@@ -1,4 +1,3 @@
-# auth.py
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -6,7 +5,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from .crud.models import User
-from .dbconfig import SessionLocal
+# from .dbconfig import SessionLocal
+from .dbconfig import get_db
 from .crud import models
 
 SECRET_KEY = "super-secret-key"  # put in env variable!
@@ -17,20 +17,20 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/auth/login")
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 
-def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+# def verify_password(plain, hashed):
+#     return pwd_context.verify(plain, hashed)
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+# def get_password_hash(password):
+#     return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -59,7 +59,7 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    # db.query(User).get(user_id) is deprecated, use filter().first()
+
     user = db.query(User).filter(models.User.id == user_id).first()
     if user is None:
         raise credentials_exception

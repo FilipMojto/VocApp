@@ -1,15 +1,12 @@
-
-
-import logging
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .. import models, schemas
-from ..crud.models import user_relation_crud
-from .. import auth
-from ..dbconfig import get_db
+from ... import models, schemas
+from ...crud.models import user_relation_crud
+from ... import auth
+from ...dbconfig import get_db
+from ..utils import handle_integrity_error
 
 
 user_word_router = APIRouter(prefix="/userwords", tags=["userwords"])
@@ -28,11 +25,7 @@ async def create_user_word(
         )
         return db_user_word
     except IntegrityError as e:
-        logging.error(e.orig)
-        raise HTTPException(
-            status_code=400,
-            detail="Constraint violation: e.g. duplicate key or null field",
-        )
+        handle_integrity_error(e)
     
 
 @user_word_router.get("/{user_word_id}", response_model=schemas.UserWordBase)
@@ -59,6 +52,7 @@ async def update_user_word(
         raise HTTPException(status_code=404, detail="UserWord not found")
     
     return user_relation_crud.update(db=db, db_obj=db_user_word, obj_in=user_word)
+
 
 @user_word_router.delete("/{user_word_id}", response_model=schemas.UserWordBase)
 async def delete_user_word(user_word_id: int, db: Session = Depends(get_db)):

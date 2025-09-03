@@ -48,3 +48,4 @@ class WordLanguageCode(PyEnum):
     HE = "he"
     TH = "th"
     VI = "vi"
+    SK = "sk"

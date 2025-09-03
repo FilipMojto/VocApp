@@ -1,7 +1,6 @@
 import uvicorn
 import argparse
 
-
 from .dbconfig import Base, get_engine, get_session_local, init_db, get_database_url
 from .seeding import seed_data
 from .crud.models import *
@@ -45,4 +44,5 @@ if __name__ == "__main__":
         seeding_session = SessionLocal()
         seed_data(seeder=args.seed, db=seeding_session)
         seeding_session.close()
-    uvicorn.run("database.api:app", host=args.api_host, port=args.api_port, reload=True)
+        
+    uvicorn.run("database.api.api:app", host=args.api_host, port=args.api_port, reload=True)

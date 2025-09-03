@@ -1,14 +1,12 @@
-
-
-import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .. import models, schemas
-from ..crud.models import word_relation_crud
-from .. import auth
-from ..dbconfig import get_db
+from ... import models, schemas
+from ...crud.models import word_relation_crud
+from ... import auth
+from ...dbconfig import get_db
+from ..utils import handle_integrity_error
 
 word_relation_router = APIRouter(prefix="/wordrelations", tags=["wordrelations"])
 
@@ -26,11 +24,7 @@ async def create_word_relation(
         
         return word_relation
     except IntegrityError as e:
-        logging.error(e.orig)
-        raise HTTPException(
-            status_code=400,
-            detail="Constraint violation: e.g. duplicate key or null field",
-        )
+        handle_integrity_error(e)
 
 
 @word_relation_router.get("/{word_relation_id}", response_model=schemas.WordRelationReturn)

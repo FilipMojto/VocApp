@@ -17,13 +17,6 @@ class UserEntryMapper:
     entries: List[WordMapper] = dc_field(default_factory=[])
 
 
-# @dataclass
-# class SeedData:
-#     users: List[UserCreate]
-#     lexical_entries: List[LexicalEntryCreate]
-# extend as needed
-
-
 class SeederInterface(ABC):
     @abstractmethod
     def load_data(self) -> List[UserEntryMapper]:

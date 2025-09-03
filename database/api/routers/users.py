@@ -7,12 +7,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..dbconfig import get_database_url
-from .. import models, schemas
-from ..crud.models import user_crud, word_crud
 
-from .. import auth
-from ..dbconfig import get_db
+from ... import models, schemas
+from ...crud.models import user_crud, word_crud
+
+from ... import auth
+from ...dbconfig import get_db
+from ..utils import handle_integrity_error
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
@@ -38,19 +39,16 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     raw_password = data.get("password", None)
     if not raw_password:
         raise HTTPException(status_code=400, detail="Password required")
+    
     data["hashed_password"] = auth.get_password_hash(raw_password)
 
     # Create directly (bypass CRUD) or call CRUD with a dict-like object:
     try:
-        db_obj = models.User(**data)  # make a DB object
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        user_obj = user_crud.create(obj_in=user, db=db)
+        return user_obj
     except IntegrityError as e:
         db.rollback()
-        logging.error(e.orig)
-        raise HTTPException(status_code=400, detail="Constraint violation")
+        handle_integrity_error(e)
 
 
 @user_router.get("/me", response_model=schemas.UserReturn)
@@ -58,7 +56,7 @@ async def read_current_user(current_user: models.User = Depends(auth.get_current
     return schemas.UserReturn(id=current_user.id, username=current_user.username)
 
 
-@user_router.get("/{user_id}", response_model=schemas.UserBase)
+@user_router.get("/{user_id}", response_model=schemas.UserReturn)
 async def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = user_crud.get(db=db, id=user_id)
     if db_user is None:
@@ -66,7 +64,7 @@ async def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@user_router.get("/", response_model=list[schemas.UserBase])
+@user_router.get("/", response_model=list[schemas.UserReturn])
 async def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return user_crud.get_multi(db=db, skip=skip, limit=limit)
 
@@ -75,7 +73,6 @@ async def __read_user_words(user_id: int, db: Session = Depends(get_db)):
     entries: List[schemas.WordReturn] = word_crud.get_by_col_value(
         col="user_id", value=user_id, db=db, many=True
     )
-    
 
     if not entries:
         raise HTTPException(
@@ -93,26 +90,18 @@ async def read_my_words(
     return await __read_user_words(user_id=current_user.id, db=db)
 
 
-@user_router.patch("/{user_id}", response_model=schemas.UserBase)
+@user_router.patch("/{user_id}", response_model=schemas.UserReturn)
 async def update_user(
-    user_id: int, user: schemas.UserBase, db: Session = Depends(get_db)
+    user_id: int, user: schemas.UserCreate, db: Session = Depends(get_db)
 ):
     db_user = user_crud.get(id=user_id, db=db)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     
     return user_crud.update(db=db, db_obj=db_user, obj_in=user)
-    # db_user = user_crud.update(
-    #     # obj_in=schemas.UserUpdate(id=user_id, **user.model_dump()), db=db
-        
-    # )
-
-    # if db_user is None:
-    #     raise HTTPException(status_code=404, detail="User not found")
-    # return db_user
 
 
-@user_router.delete("/{user_id}", response_model=schemas.UserBase)
+@user_router.delete("/{user_id}", response_model=schemas.UserReturn)
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     db_user = user_crud.delete(id=user_id, db=db)
 
