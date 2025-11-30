@@ -9,9 +9,10 @@ from sqlalchemy.orm import Session
 
 
 from ... import models, schemas
-from ...crud.models import user_crud, word_crud
+from ...crud.models import user_crud, user_word_crud
 
 from ... import auth
+from ... import security
 from ...dbconfig import get_db
 from ..utils import handle_integrity_error
 
@@ -23,8 +24,8 @@ def login(
 ):
     logging.info(f"Login attempt for user: {form_data.username}")
 
-    user = user_crud.get_by_col_value(db=db, col="username", value=form_data.username)
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+    user = user_crud.filter(db=db, col="username", value=form_data.username)
+    if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
@@ -40,7 +41,7 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if not raw_password:
         raise HTTPException(status_code=400, detail="Password required")
     
-    data["hashed_password"] = auth.get_password_hash(raw_password)
+    data["hashed_password"] = security.get_password_hash(raw_password)
 
     # Create directly (bypass CRUD) or call CRUD with a dict-like object:
     try:
@@ -70,16 +71,29 @@ async def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
 
 
 async def __read_user_words(user_id: int, db: Session = Depends(get_db)):
-    entries: List[schemas.WordReturn] = word_crud.get_by_col_value(
+    user_words = user_word_crud.filter(
         col="user_id", value=user_id, db=db, many=True
     )
 
-    if not entries:
-        raise HTTPException(
-            status_code=404, detail=f"No entries found for user_id: {user_id}"
-        )
+    if not user_words:
+        return []
 
-    return entries
+    # gather ids from join table
+    word_ids = [uw.word_id for uw in user_words]
+    print("1", word_ids)
+    # one query to load all words
+    words = db.query(models.Word).filter(models.Word.id.in_(word_ids)).all()
+    print([w.id for w in words])
+    # keep the original ordering of user_words (optional)
+    id_to_word = {w.id: w for w in words}
+    print(id_to_word)
+    ordered_words = [id_to_word[w_id] for w_id in word_ids if w_id in id_to_word]
+
+    # debug
+    for w in ordered_words:
+        print("loaded word id:", w.id)
+
+    return ordered_words
 
 
 @user_router.get("/me/words", response_model=list[schemas.WordReturn])

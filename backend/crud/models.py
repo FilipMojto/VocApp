@@ -16,6 +16,6 @@ word_crud = CRUDBase[Word, vocap_schemas.WordCreate](
 word_relation_crud = CRUDBase[WordRelation, vocap_schemas.WordRelationCreate](
     WordRelation, field_transformers=field_transformers
 )
-user_relation_crud = CRUDBase[UserWord, vocap_schemas.UserWordCreate](
+user_word_crud = CRUDBase[UserWord, vocap_schemas.UserWordCreate](
     UserWord, field_transformers=field_transformers
 )

@@ -3,7 +3,7 @@ import InputIconContainer from '../../components/icon_slots/input_icon_container
 import type { AuthPanelProps } from '../auth_panel/AuthPanel';
 import AuthPanel from '../auth_panel/AuthPanel';
 import { useState } from 'react';
-import api, { loginUser, registerUser } from '../../api';
+import api, { loginUser, registerUser } from '../../api/api';
 
 interface RegisterPanelProps extends AuthPanelProps {
   onRegisterSuccess: (user: any) => void;
@@ -38,7 +38,7 @@ function RegisterPanel({onRegisterSuccess, onToggle}: RegisterPanelProps) {
       const profile = await api.get("/users/me");
       onRegisterSuccess(profile.data);
     } catch (err: any) {
-      setError("Registration failed. Try different username.");
+      setError(err.message || "Registration failed");
     }
   }
   

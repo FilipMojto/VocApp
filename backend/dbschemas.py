@@ -79,3 +79,14 @@ CREATE INDEX idx_words_category ON words(category);
 CREATE INDEX idx_words_wordpack ON words(wordpack);
 CREATE INDEX idx_relations_type ON words_relations(relation_type);
 """
+
+truncate_schema = """
+PRAGMA foreign_keys = OFF;
+BEGIN;
+DELETE FROM words_relations;
+DELETE FROM users_words;
+DELETE FROM words;
+DELETE from users;
+COMMIT;
+VACUUM;
+"""

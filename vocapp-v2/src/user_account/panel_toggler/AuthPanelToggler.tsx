@@ -4,6 +4,8 @@ import RegisterPanel from "../register_panel/RegisterPanel";
 import { useAuth } from "../auth_context/AuthContext";
 import type { WindowType } from "../../headers/VocapHeaderV1/VocapHeaderMenuBarV1/VocapHeaderMenuBarV1";
 
+import "./AuthPanelToggler.css";
+
 export interface AuthContainerProps {
   // setMode: (mode: "login" | "register") => void;
   setCurrentWindow: (window: WindowType) => void;
@@ -22,7 +24,7 @@ export default function AuthContainer({setCurrentWindow}: AuthContainerProps) {
   }
 
   return (
-    <div>
+    <div id="auth-panel-toggler-container">
       {mode === "login" ? (
         <LoginPanel
            onLoginSuccess={(u: any) => {

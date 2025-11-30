@@ -57,23 +57,23 @@ import json
 from typing import List
 import os
 
-from .base import SeederInterface, UserEntryMapper, WordMapper
-from ..vocap_db_types import WordCategory, Wordpack
-from .. import schemas as vocap_schemas
+from ..loading import DataLoader, UserLexicon, LexemeWithTranslations
+from ...vocap_db_types import WordCategory, Wordpack
+from ... import schemas as vocap_schemas
 
 current_dir = os.path.dirname(__file__)
 VOCAB_FILE_PATH = os.path.abspath(os.path.join(current_dir, "../seeds/words.json"))
 
 
-class JSONLoader(SeederInterface):
+class JSONLoader(DataLoader):
     """Seeder class for JSON files (expects structure: { "users": [ { "name", "password", "words": [...] } ] })"""
 
-    def load_data(self, path: str = VOCAB_FILE_PATH) -> List[UserEntryMapper]:
+    def load_data(self, path: str = VOCAB_FILE_PATH) -> List[UserLexicon]:
         with open(path, "r", encoding="utf-8") as f:
             raw = json.load(f)
 
         users_list = raw.get("users") if isinstance(raw, dict) else (raw if isinstance(raw, list) else [])
-        result: List[UserEntryMapper] = []
+        result: List[UserLexicon] = []
 
         for user_obj in users_list:
             username = user_obj.get("name") or user_obj.get("username")
@@ -82,7 +82,7 @@ class JSONLoader(SeederInterface):
             # Create a Pydantic UserCreate object (fits your seeder pipeline)
             user_schema = vocap_schemas.UserCreate(username=username, password=password)
 
-            user_mapper = UserEntryMapper(user=user_schema, entries=[])
+            user_mapper = UserLexicon(user=user_schema, vocabulary=[])
 
             for word_obj in user_obj.get("words", []):
                 lexeme = word_obj.get("lexeme")
@@ -109,7 +109,7 @@ class JSONLoader(SeederInterface):
                     wordpack=pack_enum,
                 )
 
-                word_mapper = WordMapper(entry=entry_schema, translations=[])
+                word_mapper = LexemeWithTranslations(lexeme=entry_schema, translations=[])
 
                 for mapped in word_obj.get("mapped_words", []):
                     m_lex = mapped.get("lexeme")
@@ -136,7 +136,7 @@ class JSONLoader(SeederInterface):
 
                     word_mapper.translations.append(mapped_schema)
 
-                user_mapper.entries.append(word_mapper)
+                user_mapper.vocabulary.append(word_mapper)
 
             result.append(user_mapper)
 

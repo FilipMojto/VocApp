@@ -1,7 +1,7 @@
 import "./LoginPanel.css";
 import AuthPanel, { type AuthPanelProps } from "../auth_panel/AuthPanel";
 import { useState } from "react";
-import api, { loginUser } from "../../api";
+import api, { loginUser } from "../../api/api";
 
 export interface LoginPanelProps extends AuthPanelProps {
   onLoginSuccess: (user: any) => void;
@@ -36,7 +36,8 @@ LoginPanelProps) {
       onLoginSuccess(profile.data);
       // onLoginSuccess(profile.data);
     } catch (err: any) {
-      setError("Invalid username or password");
+      setError(err.message || "Login failed");
+      
     }
   }
 

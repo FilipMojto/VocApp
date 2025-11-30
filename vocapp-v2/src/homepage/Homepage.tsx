@@ -1,4 +1,4 @@
-import NewTranslationModalWindow from '../personal_vocabulary/new_translation_modal_window/NewTranslationModalWindow';
+import NewTranslationModalWindow from '../personal_vocabulary/modal_windows/new_translation_modal_window/NewTranslationModalWindow';
 import { useAuth } from '../user_account/auth_context/AuthContext';
 import './Homepage.css';
 

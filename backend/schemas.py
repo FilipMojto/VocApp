@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from .vocap_db_types import WordCategory, Wordpack, WordLanguageCode
+from .vocap_db_types import WordCategory, Wordpack, WordLanguageCode, WordRelationType
 
 # ───────────────────────────────
 # Generic Schemas
@@ -94,9 +94,10 @@ class UserWordReturn(Identity, UserWordBase):
 # WordRelation
 # ───────────────────────────────
 class WordRelationBase(BaseModel):
+    user_id: int
     word_id: int
     related_word_id: int
-    relation_type: str
+    relation_type: WordRelationType
 
 
 class WordRelationCreate(VocapCreate, WordRelationBase):
@@ -109,5 +110,15 @@ class WordRelationUpdate(VocapUpdate):
 
 
 class WordRelationReturn(WordRelationBase):
+    class Config:
+        orm_mode = True
+
+
+# for the purpose of frontend
+# this class just unites WordBase and WordRelation classes
+class RelationEntryBase(WordBase, WordRelationBase):
+    pass
+
+class RelationEntryReturn(Identity, RelationEntryBase):
     class Config:
         orm_mode = True

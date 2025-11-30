@@ -12,6 +12,10 @@
   font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
 
+#pvw-mapped-translations-section{
+  min-height: 50% !important; /* or 50%, depending on your layout */
+  transition: height 0.2s ease; /* smooth height adjustment */
+}
 
 /* Section card */
 .table-card {
@@ -19,7 +23,7 @@
   border-radius: var(--mts-radius);
   box-shadow: var(--mts-shadow);
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .section-title {
@@ -42,6 +46,8 @@
   min-width: 360px;
   font-size: 0.95rem;
   color: var(--mts-text);
+  /* min-height: 300px; */
+  min-height: 50% !important;
 }
 
 /* Header */
@@ -75,7 +81,7 @@
   background: #f8f9fb;
 }
 
-.styled-table tbody tr:hover {
+.styled-table tbody tr:hover:not(.status-row) {
   background: var(--mts-row-hover);
 }
 
@@ -85,6 +91,10 @@
   border-bottom: 1px solid var(--mts-border);
   vertical-align: middle;
   word-break: break-word;
+}
+
+.styled-table td:not(.status-row-cell) {
+  cursor: pointer;
 }
 
 /* Category label styling (optional enhancement) */

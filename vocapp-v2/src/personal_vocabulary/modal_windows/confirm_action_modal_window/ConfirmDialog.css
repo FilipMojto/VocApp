@@ -1,0 +1,9 @@
+
+:root{
+    --text-primary: #ffffff; /* slate-800 */
+}
+.confirm-dialog-message{
+    font-size: 1.125rem;
+
+    color: var(--text-primary);
+}

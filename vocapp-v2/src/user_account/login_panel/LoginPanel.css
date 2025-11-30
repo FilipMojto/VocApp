@@ -1,7 +1,7 @@
 /* Background for whole login panel */
 .login-panel {
   width: 360px;
-  margin: 80px auto;
+  /* margin: 5% auto; */
   padding: 2rem;
   background: #fdfefe; /* soft off-white with slight contrast */
   border-radius: 1.5rem;

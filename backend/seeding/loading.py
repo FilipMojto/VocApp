@@ -2,23 +2,23 @@ from dataclasses import dataclass, field as dc_field
 from typing import List
 from abc import ABC, abstractmethod
 
-from ..schemas import UserBase, WordCreate
+from ..schemas import UserCreate, WordCreate
 
 
 @dataclass
-class WordMapper:
-    entry: WordCreate
+class LexemeWithTranslations:
+    lexeme: WordCreate
     translations: List[WordCreate] = dc_field(default_factory=[])
 
 
 @dataclass
-class UserEntryMapper:
-    user: UserBase
-    entries: List[WordMapper] = dc_field(default_factory=[])
+class UserLexicon:
+    user: UserCreate
+    vocabulary: List[LexemeWithTranslations] = dc_field(default_factory=[])
 
 
-class SeederInterface(ABC):
+class DataLoader(ABC):
     @abstractmethod
-    def load_data(self) -> List[UserEntryMapper]:
+    def load_data(self) -> List[UserLexicon]:
         """Should return a list of insertable database objects."""
         pass
